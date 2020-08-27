@@ -7,5 +7,7 @@ class UserProfile(models.Model):
     bio = models.CharField('Bio', max_length=255, blank=True)
     img = models.ImageField('Profile pic', default='default.jpg', upload_to='profile_pics')
 
+    following = models.ManyToManyField(User, related_name='followed')
+
     def __str__(self):
-        return f'{self.user.id} {self.user.username}'
+        return f'{self.user.username}'
