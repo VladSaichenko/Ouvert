@@ -1,7 +1,5 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.mixins import (
     RetrieveModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin
 )
@@ -26,7 +24,7 @@ class PostViewSet(RetrieveModelMixin,
     def get_permissions(self):
         if self.action == 'create':
             permission_classes = (IsAuthenticated,)
-        elif self.action == 'destroy':
+        elif self.action == ('destroy' or 'update'):
             permission_classes = (IsUsersOrReadOnly,)
         return [permission() for permission in permission_classes]
 
@@ -34,8 +32,3 @@ class PostViewSet(RetrieveModelMixin,
         """ Assignment of profile and author """
         return serializer.save(author=self.request.user,
                                profile=self.request.user.profile.get())
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=HTTP_204_NO_CONTENT)
