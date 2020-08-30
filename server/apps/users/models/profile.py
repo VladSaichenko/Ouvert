@@ -6,10 +6,13 @@ from PIL import Image
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profile')
-    bio = models.CharField('Bio', max_length=255, blank=True)
-    img = models.ImageField('Profile pic', default='default.jpg', upload_to='profile_pics', blank=True)
+    bio = models.CharField(max_length=255, blank=True)
+    img = models.ImageField(default='default.jpg', upload_to='profile_pics', blank=True)
+    location = models.CharField(max_length=125)
 
-    following = models.ManyToManyField(User, related_name='followed', blank=True)
+    following = models.ManyToManyField('self', blank=True, related_name='followed')
+    likes = models.ManyToManyField('posts.Post', blank=True, related_name='likes')
+    reposted = models.ManyToManyField('posts.Post', blank=True, related_name='reposted')
 
     def __str__(self):
         return f'{self.user.username}'
