@@ -1,6 +1,6 @@
 from rest_framework import routers
 
-from apps.users.viewsets.views import UserViewSet
+from apps.users.viewsets.users import UserViewSet
 from apps.users.viewsets.profile import UserProfileViewSet
 from apps.posts.viewsets.posts import PostViewSet
 from apps.posts.viewsets.posts_photos import PostsPhotoViewSet

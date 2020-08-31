@@ -6,7 +6,7 @@ from rest_framework.status import HTTP_201_CREATED
 
 from django.contrib.auth.models import User
 
-from apps.users.serializers.serializers import UserSerializer
+from apps.users.serializers.users import UserSerializer
 
 
 class UserViewSet(CreateModelMixin, GenericViewSet):

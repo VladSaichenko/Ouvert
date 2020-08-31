@@ -18,7 +18,7 @@ class UserProfile(models.Model):
         return f'{self.user.username}'
 
     def delete(self, *args, **kwargs):
-        if self.img:
+        if self.img.name != 'default.jpg':
             self.img.delete()
         super().delete(*args, **kwargs)
 
