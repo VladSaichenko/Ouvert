@@ -1,4 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
 from url_filter.integrations.drf import DjangoFilterBackend
 
 from apps.posts.serializers.posts import PostSerializer
@@ -12,6 +14,14 @@ class PostViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ('profile',)
     permission_classes = (IsUserObjectOrReadOnly,)
+
+    def get_permissions(self):
+        if self.request.method in ('PUT', 'PATCH', 'DELETE'):
+            return (IsUserObjectOrReadOnly(),)
+        elif self.request.method == 'POST':
+            return (IsAuthenticated(),)
+        else:
+            return (AllowAny(),)
 
     def perform_create(self, serializer):
         """ Assignment of profile """
