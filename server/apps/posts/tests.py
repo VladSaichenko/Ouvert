@@ -35,6 +35,7 @@ class PostsAPITests(APITestCase):
         count_posts_before = Post.objects.count()
         send_post_data = {
             'content': 'hello',
+            "title": "Testing",
         }
 
         response = client.post('/api/posts/', send_post_data, format='json')
@@ -48,6 +49,7 @@ class PostsAPITests(APITestCase):
         count_posts_before = Post.objects.count()
         send_post_data = {
             'content': 'hello',
+            "title": "Testing",
         }
 
         response = self.client.post('/api/posts/', send_post_data, format='json')
@@ -83,20 +85,23 @@ class PostsAPITests(APITestCase):
         count_posts_before = Post.objects.count()
         send_post_data = {
             'content': 'hello',
+            "title": "Testing",
         }
 
         response = client.post('/api/posts/', send_post_data, format='json')
 
         url = f"/api/posts/{response.data['id']}/"
         updated_post_data = {
-            'content': 'Hola'
+            'content': 'Hola',
+            "title": "Testing",
         }
         response = client.put(url, updated_post_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(updated_post_data['content'], response.data['content'])
 
         updated_post_data = {
-            'content': 'Ciao'
+            'content': 'Ciao',
+            "title": "Testing",
         }
         response = client.patch(url, updated_post_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -110,6 +115,7 @@ class PostsAPITests(APITestCase):
         client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
         send_post_data = {
             'content': 'hello',
+            "title": "Testing",
         }
 
         response = client.post('/api/posts/', send_post_data, format='json')
@@ -118,6 +124,7 @@ class PostsAPITests(APITestCase):
         url = f"/api/posts/{response.data['id']}/"
         updated_post_data = {
             'content': 'Hola',
+            "title": "Testing",
         }
         response = client.put(url, updated_post_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -133,6 +140,7 @@ class PostsAPITests(APITestCase):
         client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
         send_post_data = {
             'content': 'hello',
+            "title": "Testing",
         }
         response = client.post('/api/posts/', send_post_data, format='json')
         url = f"/api/posts/{response.data['id']}/"
@@ -145,6 +153,7 @@ class PostsAPITests(APITestCase):
         client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
         send_post_data = {
             'content': 'hello',
+            "title": "Testing",
         }
         response = client.post('/api/posts/', send_post_data, format='json')
         url = f"/api/posts/{response.data['id']}/"

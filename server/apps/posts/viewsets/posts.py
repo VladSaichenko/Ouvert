@@ -25,4 +25,13 @@ class PostViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         """ Assignment of profile """
-        return serializer.save(profile=self.request.user.profile.get())
+        print('!!!!!!!!!!!!!!!!', serializer.validated_data['content_object']['content_object'])
+        post_instance = Post(
+            profile=self.request.user.profile.get(),
+            content_object=serializer.validated_data['content_object']['content_object'],
+            title=serializer.validated_data['title'],
+            content=serializer.validated_data['content'],
+        )
+        post_instance.save()
+
+        return self.get_serializer(instance=post_instance)

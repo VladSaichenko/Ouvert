@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -14,8 +15,10 @@ class UserProfile(models.Model):
     likes = models.ManyToManyField('posts.Post', blank=True, related_name='likes')
     reposted = models.ManyToManyField('posts.Post', blank=True, related_name='reposted')
 
+    posts = GenericRelation('posts.Post')
+
     def __str__(self):
-        return f'{self.user.username}'
+        return f'Profile {self.user.username}'
 
     def delete(self, *args, **kwargs):
         if self.img.name != 'default.jpg':
