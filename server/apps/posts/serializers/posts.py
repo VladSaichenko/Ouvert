@@ -17,5 +17,5 @@ class PostSerializer(ModelSerializer):
             'profile': {'read_only': True},
             'object_id': {'read_only': True},
             'content_type': {'read_only': True},
-
+            'content_object': {'read_only': True},
         }
