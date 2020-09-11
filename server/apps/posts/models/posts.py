@@ -11,7 +11,7 @@ class Post(models.Model):
     content = models.TextField(max_length=10000)
     created = models.DateTimeField(auto_now_add=True)
 
-    # Imply use with profile, community, ...
+    # Imply use with profile, community, etc
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')

@@ -17,25 +17,26 @@ class PostsAPITests(APITestCase):
         response = self.client.post('/api/users/', test_user1_data, format='json')
         self.test_user1_response = response.data
 
-        test_user1 = User.objects.create(username='Guido', password='python123', email='emails@com.com')
-        self.test_user1_token = 'Token ' + str(Token.objects.get_or_create(user=test_user1)[0])
+        self.test_user1 = User.objects.create(username='Guido', password='python123', email='emails@com.com')
+        self.test_user1_token = 'Token ' + Token.objects.create(user=self.test_user1).key
 
-        test_user2 = User.objects.create(username='Linus', password='linux123', email='email@com.com')
-        self.test_user2_token = 'Token ' + Token.objects.create(user=test_user2).key
+        self.test_user2 = User.objects.create(username='Linus', password='linux123', email='email@com.com')
+        self.test_user2_token = 'Token ' + Token.objects.create(user=self.test_user2).key
 
-        profile = UserProfile.objects.get(user=test_user1)
-        Post.objects.create(content='hello', profile=profile)
+        profile = UserProfile.objects.get(user=self.test_user1)
+        Post.objects.create(title='some title', content='hello', content_object=profile, profile=profile)
 
     def test_create_post(self):
         """
-        Test that user can create post
+        Test that user can create post on its profile
         """
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
         count_posts_before = Post.objects.count()
         send_post_data = {
-            'content': 'hello',
-            "title": "Testing",
+            'title': 'Hello, Ouvert!',
+            'content': 'hi',
+            'content_object': self.test_user1.profile.get().__str__(),
         }
 
         response = client.post('/api/posts/', send_post_data, format='json')
@@ -49,7 +50,8 @@ class PostsAPITests(APITestCase):
         count_posts_before = Post.objects.count()
         send_post_data = {
             'content': 'hello',
-            "title": "Testing",
+            'title': 'Testing',
+            'content_object': self.test_user1.profile.get().__str__(),
         }
 
         response = self.client.post('/api/posts/', send_post_data, format='json')
@@ -60,7 +62,7 @@ class PostsAPITests(APITestCase):
         """
         Test that user can retrieve post
         """
-        url = f'/api/posts/{Post.objects.all().first().id}/'
+        url = f'/api/posts/{Post.objects.first().id}/'
 
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -71,7 +73,7 @@ class PostsAPITests(APITestCase):
         """
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
-        url = f'/api/posts/{Post.objects.all().first().id}/'
+        url = f'/api/posts/{Post.objects.first().id}/'
 
         response = client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -82,10 +84,10 @@ class PostsAPITests(APITestCase):
         """
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
-        count_posts_before = Post.objects.count()
         send_post_data = {
             'content': 'hello',
-            "title": "Testing",
+            'title': 'Testing',
+            'content_object': self.test_user1.profile.get().__str__(),
         }
 
         response = client.post('/api/posts/', send_post_data, format='json')
@@ -93,7 +95,8 @@ class PostsAPITests(APITestCase):
         url = f"/api/posts/{response.data['id']}/"
         updated_post_data = {
             'content': 'Hola',
-            "title": "Testing",
+            'title': 'Testing',
+            'content_object': self.test_user1.profile.get().__str__(),
         }
         response = client.put(url, updated_post_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -101,7 +104,8 @@ class PostsAPITests(APITestCase):
 
         updated_post_data = {
             'content': 'Ciao',
-            "title": "Testing",
+            'title': 'Testing',
+            'content_object': self.test_user1.profile.get().__str__(),
         }
         response = client.patch(url, updated_post_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -115,7 +119,8 @@ class PostsAPITests(APITestCase):
         client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
         send_post_data = {
             'content': 'hello',
-            "title": "Testing",
+            'title': 'Testing',
+            'content_object': self.test_user1.profile.get().__str__(),
         }
 
         response = client.post('/api/posts/', send_post_data, format='json')
@@ -124,7 +129,8 @@ class PostsAPITests(APITestCase):
         url = f"/api/posts/{response.data['id']}/"
         updated_post_data = {
             'content': 'Hola',
-            "title": "Testing",
+            'title': 'Testing',
+            'content_object': self.test_user1.profile.get().__str__(),
         }
         response = client.put(url, updated_post_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -140,7 +146,8 @@ class PostsAPITests(APITestCase):
         client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
         send_post_data = {
             'content': 'hello',
-            "title": "Testing",
+            'title': 'Testing',
+            'content_object': self.test_user1.profile.get().__str__(),
         }
         response = client.post('/api/posts/', send_post_data, format='json')
         url = f"/api/posts/{response.data['id']}/"
@@ -149,11 +156,15 @@ class PostsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_others_post(self):
+        """
+        Test that user cannot delete others post
+        """
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
         send_post_data = {
             'content': 'hello',
-            "title": "Testing",
+            'title': 'Testing',
+            'content_object': self.test_user1.profile.get().__str__(),
         }
         response = client.post('/api/posts/', send_post_data, format='json')
         url = f"/api/posts/{response.data['id']}/"
