@@ -9,4 +9,5 @@ class CommentSerializer(ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('profile', 'content', 'created', 'content_type', 'object_id', 'content_object',)
+        fields = ('id', 'profile', 'content', 'created', 'content_type', 'object_id', 'content_object',)
+        extra_kwargs = {'profile': {'read_only': True},}
