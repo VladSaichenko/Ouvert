@@ -11,7 +11,7 @@ class PostSerializer(ModelSerializer):
     class Meta:
         model = Post
         fields = (
-            'id', 'profile', 'title', 'content', 'content_type', 'object_id', 'content_object',
+            'id', 'profile', 'created', 'title', 'content', 'content_type', 'object_id', 'content_object',
         )
         extra_kwargs = {
             'profile': {'read_only': True},

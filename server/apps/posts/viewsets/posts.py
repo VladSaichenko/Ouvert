@@ -13,7 +13,7 @@ class PostViewSet(ModelViewSet):
     serializer_class = PostSerializer
     queryset = Post.objects.all().order_by('-created')
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('profile',)
+    filter_fields = ('profile', 'created', 'content_type', 'object_id', 'content_object',)
 
     def get_permissions(self):
         if self.request.method in ('PUT', 'PATCH', 'DELETE'):
