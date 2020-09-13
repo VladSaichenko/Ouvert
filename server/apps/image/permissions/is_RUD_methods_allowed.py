@@ -6,20 +6,6 @@ from apps.comments.models.comment import Comment
 
 
 class IsUpdateAndDeleteActionsAllowed(BasePermission):
-    # def has_permission(self, request, view):
-    #     """
-    #     Permission for `POST`, `PATCH`, `DELETE` methods.
-    #     """
-    #     if request.user.is_authenticated:
-    #         print(request.data)
-    #         app_label = ContentType.objects.get_for_id(request.data['content_type'])
-    #         instance = app_label.model_class().objects.get(id=request.data['object_id'])
-    #         if isinstance(instance, UserProfile):
-    #             return instance == request.user.get()
-    #         elif isinstance(instance, (Post, Comment)):
-    #             return instance.profile == request.user.get()
-    #         raise Exception('Unexpected type of instance')
-
     def has_object_permission(self, request, view, obj):
         """
         Permission for `POST`, `PATCH`, `DELETE` methods.

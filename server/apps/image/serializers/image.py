@@ -13,4 +13,5 @@ class ImageSerializer(ModelSerializer):
         fields = (
             'id', 'profile', 'caption', 'created', 'image', 'content_type', 'object_id', 'content_object',
         )
+
         extra_kwargs = {'profile': {'read_only': True}}
