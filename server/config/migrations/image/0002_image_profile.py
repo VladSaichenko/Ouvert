@@ -9,14 +9,14 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('image', '0001_initial'),
         ('users', '0001_initial'),
-        ('posts', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='post',
+            model_name='image',
             name='profile',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='posted', to='users.userprofile'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='users.userprofile'),
         ),
     ]

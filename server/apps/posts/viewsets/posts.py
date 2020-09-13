@@ -17,12 +17,10 @@ class PostViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.request.method in ('PUT', 'PATCH', 'DELETE'):
-            self.permission_classes = (IsUserObjectOrReadOnly,)
+            return (IsUserObjectOrReadOnly(),)
         elif self.request.method == 'POST':
-            self.permission_classes = (IsUserProfileOrReadOnly,)
-        else:
-            self.permission_classes = (AllowAny,)
-        return super(PostViewSet, self).get_permissions()
+            return (IsUserProfileOrReadOnly(),)
+        return (AllowAny(),)
 
     def perform_create(self, serializer):
         return serializer.save(profile=self.request.user.profile.get())

@@ -9,14 +9,6 @@ from apps.users.models.profile import UserProfile
 
 class PostsAPITests(APITestCase):
     def setUp(self):
-        test_user1_data = {
-            'username': 'Testuser',
-            'password': 'strongpsw123',
-            'email': 'Testuser@company.com',
-        }
-        response = self.client.post('/api/users/', test_user1_data, format='json')
-        self.test_user1_response = response.data
-
         self.test_user1 = User.objects.create(username='Guido', password='python123', email='emails@com.com')
         self.test_user1_token = 'Token ' + Token.objects.create(user=self.test_user1).key
 

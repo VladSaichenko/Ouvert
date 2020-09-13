@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ImageField
 
 from apps.image.models.image import Image
 from .custom_fields.image_object_related_field import ImageObjectRelatedField
@@ -6,6 +6,7 @@ from .custom_fields.image_object_related_field import ImageObjectRelatedField
 
 class ImageSerializer(ModelSerializer):
     content_object = ImageObjectRelatedField(read_only=True)
+    image = ImageField(required=True)
 
     class Meta:
         model = Image

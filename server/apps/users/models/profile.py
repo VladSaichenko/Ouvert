@@ -15,6 +15,7 @@ class UserProfile(models.Model):
     likes = models.ManyToManyField('posts.Post', blank=True, related_name='likes')
     reposted = models.ManyToManyField('posts.Post', blank=True, related_name='reposted')
 
+    images = GenericRelation('image.Image')
     posts = GenericRelation('posts.Post')
 
     def __str__(self):
