@@ -7,6 +7,11 @@ from rest_framework import status
 
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.contrib.contenttypes.models import ContentType
+
+from apps.posts.models.posts import Post
+from apps.comments.models.comment import Comment
+from apps.comments.models.minor_comment import MinorComment
 
 
 class ImageAPITests(APITestCase):
@@ -24,6 +29,25 @@ class ImageAPITests(APITestCase):
 
         self.test_user2 = User.objects.create(username='Linus', password='linux123', email='email@com.com')
         self.test_user2_token = 'Token ' + Token.objects.create(user=self.test_user2).key
+
+        post = Post.objects.create(
+            profile=self.test_user1.profile.get(),
+            title='Title',
+            content='Hello, Ouvert!',
+            content_object=self.test_user2.profile.get()
+        )
+        post_content_type = ContentType.objects.get_for_id(10)
+        comment = Comment.objects.create(
+            profile=self.test_user1.profile.get(),
+            content='it is a coment',
+            content_type=ContentType.objects.get_for_id(10),
+            object_id=post.id
+        )
+        minor_comment = MinorComment.objects.create(
+            profile=self.test_user1.profile.get(),
+            main_comment=comment,
+            content='itis a minor comment'
+        )
 
     def test_create_image(self):
         """
@@ -261,3 +285,97 @@ class ImageAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(user_profile.images.count(), count_images_before)
+
+    def test_create_image_for_post(self):
+        """
+        Test that image can be created for post.
+        """
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
+        user_profile = self.test_user1.profile.get()
+        image_data = {
+            'caption': '',
+            'image': self.generate_photo_file(),
+            'content_type': 10,
+            'object_id': Post.objects.last().id
+        }
+        count_images_before = Post.objects.last().images.count()
+        url = reverse('images-list')
+        response = client.post(url, image_data, format='multipart')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue('caption' in response.data)
+        self.assertTrue('image' in response.data)
+        self.assertTrue('content_type' in response.data)
+        self.assertTrue('object_id' in response.data)
+        self.assertEqual(Post.objects.last().images.count(), count_images_before + 1)
+
+    def test_create_image_for_profile(self):
+        """
+        Test that image can be created for user profile.
+        """
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
+        user_profile = self.test_user1.profile.get()
+        image_data = {
+            'caption': '',
+            'image': self.generate_photo_file(),
+            'content_type': 9,
+            'object_id': user_profile.id
+        }
+        count_images_before = user_profile.images.count()
+        url = reverse('images-list')
+        response = client.post(url, image_data, format='multipart')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue('caption' in response.data)
+        self.assertTrue('image' in response.data)
+        self.assertTrue('content_type' in response.data)
+        self.assertTrue('object_id' in response.data)
+        self.assertEqual(user_profile.images.count(), count_images_before + 1)
+
+    def test_create_image_for_comment(self):
+        """
+        Test that image can be created for comment.
+        """
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
+        user_profile = self.test_user1.profile.get()
+        image_data = {
+            'caption': '',
+            'image': self.generate_photo_file(),
+            'content_type': 12,
+            'object_id': Comment.objects.last().id,
+        }
+        url = reverse('images-list')
+        response = client.post(url, image_data, format='multipart')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue('caption' in response.data)
+        self.assertTrue('image' in response.data)
+        self.assertTrue('content_type' in response.data)
+        self.assertTrue('object_id' in response.data)
+
+    def test_create_image_for_minor_comment(self):
+        """
+        Test that image can be created for minor comment
+        """
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION=self.test_user1_token)
+        user_profile = self.test_user1.profile.get()
+        image_data = {
+            'caption': '',
+            'image': self.generate_photo_file(),
+            'content_type': 13,
+            'object_id': MinorComment.objects.last().id
+        }
+        count_images_before = MinorComment.objects.last().images.count()
+        url = reverse('images-list')
+        response = client.post(url, image_data, format='multipart')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue('caption' in response.data)
+        self.assertTrue('image' in response.data)
+        self.assertTrue('content_type' in response.data)
+        self.assertTrue('object_id' in response.data)
+        self.assertEqual(MinorComment.objects.last().images.count(), count_images_before + 1)
