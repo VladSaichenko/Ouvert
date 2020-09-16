@@ -1,5 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from url_filter.integrations.drf import DjangoFilterBackend
 
@@ -17,9 +17,9 @@ class ImageViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.request.method in ('PUT', 'PATCH', 'DELETE'):
-            return (IsUpdateAndDeleteActionsAllowed(),)
+            return (IsAuthenticated(), IsUpdateAndDeleteActionsAllowed(),)
         if self.request.method == 'POST':
-            return (IsUserObjectOrReadOnly(),)
+            return (IsAuthenticated(), IsUserObjectOrReadOnly(),)
         else:
             return (AllowAny(),)
 

@@ -11,10 +11,8 @@ class IsUpdateAndDeleteActionsAllowed(BasePermission):
         Permission for `POST`, `PATCH`, `DELETE` methods.
         Only owner can create images for its objects.
         """
-        if request.user.is_authenticated:
-            if isinstance(obj.content_object, UserProfile):
-                return obj.content_object == request.user.profile.get()
-            elif isinstance(obj.content_object, (Post, Comment)):
-                return obj.content_object.profile == request.user.profile.get()
-            raise Exception('Unexpected type of instance')
-        return False
+        if isinstance(obj.content_object, UserProfile):
+            return obj.content_object == request.user.profile.get()
+        elif isinstance(obj.content_object, (Post, Comment)):
+            return obj.content_object.profile == request.user.profile.get()
+        raise Exception('Unexpected type of instance')
