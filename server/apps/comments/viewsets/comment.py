@@ -1,6 +1,8 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
+from url_filter.integrations.drf import DjangoFilterBackend
+
 from apps.comments.serializers.comment import CommentSerializer
 from apps.comments.permissions.can_user_comment import CanUserComment
 from apps.comments.permissions.can_user_rud_comment import CanUserRUDComment
@@ -10,6 +12,8 @@ from apps.comments.models.comment import Comment
 class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.order_by('-created')
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('profile', 'created', 'content_type', 'object_id',)
 
     def get_permissions(self):
         if self.request.method == 'POST':
