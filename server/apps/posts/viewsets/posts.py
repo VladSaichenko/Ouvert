@@ -1,5 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from url_filter.integrations.drf import DjangoFilterBackend
 
@@ -19,7 +19,7 @@ class PostViewSet(ModelViewSet):
         if self.request.method in ('PUT', 'PATCH', 'DELETE'):
             return (IsUserObjectOrReadOnly(),)
         elif self.request.method == 'POST':
-            return (IsUserProfileOrReadOnly(),)
+            return (IsAuthenticated(), IsUserProfileOrReadOnly(),)
         return (AllowAny(),)
 
     def perform_create(self, serializer):

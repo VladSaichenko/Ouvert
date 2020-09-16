@@ -6,7 +6,7 @@ from .custom_fields.object_post_related_field import ObjectPostRelatedField
 
 
 class PostSerializer(ModelSerializer):
-    content_object = ObjectPostRelatedField(many=False, queryset=UserProfile.objects.all())
+    content_object = ObjectPostRelatedField(read_only=True)
 
     class Meta:
         model = Post
@@ -15,7 +15,5 @@ class PostSerializer(ModelSerializer):
         )
         extra_kwargs = {
             'profile': {'read_only': True},
-            'object_id': {'read_only': True},
-            'content_type': {'read_only': True},
             'content_object': {'read_only': True},
         }
